@@ -1,0 +1,6 @@
+@RetailErp.Pos.API_HostAddress = http://localhost:5031
+
+GET {{RetailErp.Pos.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
