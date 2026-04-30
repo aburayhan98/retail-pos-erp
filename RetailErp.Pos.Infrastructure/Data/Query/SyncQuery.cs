@@ -8,11 +8,12 @@ public sealed class SyncQuery(IDbConnectionFactory dbConnectionFactory) : ISyncQ
 {
 	private readonly IDbConnectionFactory _dbConnectionFactory = dbConnectionFactory;
 
-	public async Task<IReadOnlyList<Sale>> GetSyncedSalesAsync()
+	public async Task<IReadOnlyList<Sale>> GetUnSyncedSalesAsync()
 	{
 		const string sql = """
             SELECT
                 SaleId,
+                OutletId,
                 SaleDate,
                 TotalAmount,
                 SyncStatus,
