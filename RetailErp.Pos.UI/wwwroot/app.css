@@ -49,3 +49,20 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+.navbar,
+.navbar-dark,
+.navbar-light {
+  background-color: #ff7a00 !important; /* orange */
+}
+
+  .navbar .nav-link {
+    color: white !important;
+  }
+
+    .navbar .nav-link.active {
+      font-weight: bold;
+      border-bottom: 2px solid white;
+    }
+.sidebar {
+  background-color: #ff7a00 !important; /* your orange */
+}
