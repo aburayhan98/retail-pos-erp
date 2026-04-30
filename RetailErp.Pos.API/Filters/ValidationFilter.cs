@@ -33,7 +33,31 @@ public sealed class ValidationFilter(IServiceProvider serviceProvider) : IAsyncA
 				continue;
 			}
 
-			var result = await validator.ValidateAsync((IValidationContext)validationContext, context.HttpContext.RequestAborted);
+			var validateAsyncMethod = validator.GetType().GetMethod(
+				nameof(IValidator.ValidateAsync),
+				[
+					validationContextType,
+					typeof(CancellationToken)
+				]);
+
+			if (validateAsyncMethod is null)
+			{
+				continue;
+			}
+
+			var validationTask = (Task<FluentValidation.Results.ValidationResult>?)validateAsyncMethod.Invoke(
+				validator,
+				[
+					validationContext,
+					context.HttpContext.RequestAborted
+				]);
+
+			if (validationTask is null)
+			{
+				continue;
+			}
+
+			var result = await validationTask;
 
 			if (!result.IsValid)
 			{
