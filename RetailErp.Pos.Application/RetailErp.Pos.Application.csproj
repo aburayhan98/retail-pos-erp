@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RetailErp.Pos.Domain\RetailErp.Pos.Domain.csproj" />
-    <ProjectReference Include="..\RetailPos.Shared\RetailPos.Shared.csproj" />
+    <PackageReference Include="FluentValidation" Version="8.6.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Validators\" />
+    <ProjectReference Include="..\RetailErp.Pos.Domain\RetailErp.Pos.Domain.csproj" />
+    <ProjectReference Include="..\RetailPos.Shared\RetailPos.Shared.csproj" />
   </ItemGroup>
 
 </Project>
