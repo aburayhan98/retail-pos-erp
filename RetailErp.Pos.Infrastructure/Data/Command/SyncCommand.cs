@@ -20,33 +20,22 @@ public sealed class SyncCommand : ISyncCommand
             INSERT INTO CentralSales
             (
                 SaleId,
+                OutletId,
                 SaleDate,
-                TotalAmount,
-                SyncStatus,
-                RetryCount,
-                SyncedAt
+                TotalAmount
             )
             VALUES
             (
                 @SaleId,
+                @OutletId,
                 @SaleDate,
-                @TotalAmount,
-                'Synced',
-                @RetryCount,
-                @SyncedAt
+                @TotalAmount
             );
             """;
 
 		using var connection = await _dbConnectionFactory.CreateConnectionAsync();
 
-		await connection.ExecuteAsync(sql, new
-		{
-			sale.SaleId,
-			sale.SaleDate,
-			sale.TotalAmount,
-			sale.RetryCount,
-			SyncedAt = DateTime.UtcNow
-		});
+		await connection.ExecuteAsync(sql, sale);
 	}
 
 	public async Task MarkAsSyncedAsync(Guid saleId)

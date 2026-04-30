@@ -13,10 +13,12 @@ public sealed class SaleQuery(IDbConnectionFactory dbConnectionFactory) : ISaleQ
 		const string sql = """
             SELECT
                 SaleId,
+                OutletId,
                 SaleDate,
                 TotalAmount,
                 SyncStatus,
-                RetryCount
+                RetryCount,
+                LastSyncAttemptAt
             FROM Sales
             ORDER BY SaleDate DESC;
             """;
@@ -33,10 +35,12 @@ public sealed class SaleQuery(IDbConnectionFactory dbConnectionFactory) : ISaleQ
 		const string sql = """
             SELECT
                 SaleId,
+                OutletId,
                 SaleDate,
                 TotalAmount,
                 SyncStatus,
-                RetryCount
+                RetryCount,
+                LastSyncAttemptAt
             FROM Sales
             WHERE SyncStatus IN ('Pending', 'Failed');
             """;
@@ -53,10 +57,12 @@ public sealed class SaleQuery(IDbConnectionFactory dbConnectionFactory) : ISaleQ
 		const string sql = """
             SELECT
                 SaleId,
+                OutletId,
                 SaleDate,
                 TotalAmount,
                 SyncStatus,
-                RetryCount
+                RetryCount,
+                LastSyncAttemptAt
             FROM Sales
             WHERE SaleId = @SaleId;
             """;

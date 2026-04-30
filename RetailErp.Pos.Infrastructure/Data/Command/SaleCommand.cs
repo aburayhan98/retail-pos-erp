@@ -14,6 +14,7 @@ public sealed class SaleCommand(IDbConnectionFactory dbConnectionFactory) : ISal
             INSERT INTO Sales
             (
                 SaleId,
+                OutletId,
                 SaleDate,
                 TotalAmount,
                 SyncStatus,
@@ -22,6 +23,7 @@ public sealed class SaleCommand(IDbConnectionFactory dbConnectionFactory) : ISal
             VALUES
             (
                 @SaleId,
+                @OutletId,
                 @SaleDate,
                 @TotalAmount,
                 @SyncStatus,
@@ -30,7 +32,15 @@ public sealed class SaleCommand(IDbConnectionFactory dbConnectionFactory) : ISal
             """;
 
 		using var connection = await _dbConnectionFactory.CreateConnectionAsync();
-		await connection.ExecuteAsync(sql, sale);
+		await connection.ExecuteAsync(sql, new
+		{
+			sale.SaleId,
+			sale.OutletId,
+			sale.SaleDate,
+			sale.TotalAmount,
+			SyncStatus = sale.SyncStatus.ToString(),
+			sale.RetryCount
+		});
 	}
 
 	public async Task MarkSyncAsync(Guid saleId, bool isSuccess)
@@ -84,12 +94,14 @@ public sealed class SaleCommand(IDbConnectionFactory dbConnectionFactory) : ISal
             INSERT INTO CentralSales
             (
                 SaleId,
+                OutletId,
                 SaleDate,
                 TotalAmount
             )
             VALUES
             (
                 @SaleId,
+                @OutletId,
                 @SaleDate,
                 @TotalAmount
             );
