@@ -7,4 +7,5 @@ public sealed class Product
 	public string Barcode { get; set; } = string.Empty;
 	public int StockQuantity { get; set; }
 	public decimal Price { get; set; }
+	public DateTime CreatedAt { get; set; }
 }
