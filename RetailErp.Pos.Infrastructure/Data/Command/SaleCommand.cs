@@ -35,25 +35,25 @@ public sealed class SaleCommand(IDbConnectionFactory dbConnectionFactory) : ISal
             """;
 
 		const string insertSaleItemSql = """
-            INSERT INTO SaleItems
-            (
-                SaleItemId,
-                SaleId,
-                ProductId,
-                Barcode,
-                Quantity,
-                UnitPrice
-            )
-            VALUES
-            (
-                @SaleItemId,
-                @SaleId,
-                @ProductId,
-                @Barcode,
-                @Quantity,
-                @UnitPrice
-            );
-            """;
+    INSERT INTO SaleItems
+    (
+        SaleItemId,
+        SaleId,
+        ProductId,
+        Barcode,
+        Quantity,
+        UnitPrice
+    )
+    VALUES
+    (
+        @SaleItemId,
+        @SaleId,
+        @ProductId,
+        @Barcode,
+        @Quantity,
+        @UnitPrice
+    );
+    """;
 
 		const string reduceStockSql = """
             UPDATE Products
@@ -84,17 +84,17 @@ public sealed class SaleCommand(IDbConnectionFactory dbConnectionFactory) : ISal
 			foreach (var item in sale.Items)
 			{
 				await connection.ExecuteAsync(
-						insertSaleItemSql,
-						new
-						{
-							item.SaleItemId,
-							sale.SaleId,
-							item.ProductId,
-							item.Barcode,
-							item.Quantity,
-							item.UnitPrice
-						},
-						transaction);
+							insertSaleItemSql,
+							new
+							{
+								item.SaleItemId,
+								sale.SaleId,
+								item.ProductId,
+								item.Barcode,
+								item.Quantity,
+								item.UnitPrice
+							},
+							transaction);
 
 				var affectedRows = await connection.ExecuteAsync(
 						reduceStockSql,
