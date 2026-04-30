@@ -1,6 +1,6 @@
 ﻿namespace RetailErp.Pos.Application.DTOs.Products;
 
- public sealed record ProductDto
+ public sealed record ProductResponse
 {
 	public Guid ProductId { get; set; }
 	public string Name { get; set; } = string.Empty;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RetailErp.Pos.Application.DTOs.Products
 {
-	public sealed record CreateProductDto
+	public sealed record CreateProductRequest
 	{
 		public string Name { get; set; } = string.Empty;
 		public string Barcode { get; set; } = string.Empty;

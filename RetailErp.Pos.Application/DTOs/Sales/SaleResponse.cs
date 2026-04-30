@@ -1,9 +1,9 @@
 ﻿namespace RetailErp.Pos.Application.DTOs.Sales;
 
-public sealed record SaleDto
+public class SaleResponse
 {
 	public Guid SaleId { get; set; }
-	public string OutletId { get; set; } = string.Empty;
+	public Guid OutletId { get; set; }
 	public DateTime SaleDate { get; set; }
 	public decimal TotalAmount { get; set; }
 	public string SyncStatus { get; set; } = string.Empty;
