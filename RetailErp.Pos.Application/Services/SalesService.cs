@@ -1,4 +1,5 @@
-﻿using RetailErp.Pos.Application.DTOs.Sales;
+using RetailErp.Pos.Application.Common.Exceptions;
+using RetailErp.Pos.Application.DTOs.Sales;
 using RetailErp.Pos.Application.Interfaces.IRepositories.IProduct;
 using RetailErp.Pos.Application.Interfaces.IRepositories.ISale;
 using RetailErp.Pos.Application.Interfaces.IServices;
@@ -20,13 +21,10 @@ public sealed class SalesService(
 
 	public async Task CreateAsync(CreateSaleRequest request)
 	{
-		if (request == null)
-		{
-			throw new ArgumentNullException(nameof(request));
-		}
+		ArgumentNullException.ThrowIfNull(request);
 
 		if (request.Items == null || request.Items.Count == 0)
-			throw new ArgumentException("Sale must contain at least one item.");
+			throw new BadRequestException("Sale must contain at least one item.", "sale_items_required");
 
 		var saleId = Guid.NewGuid();
 		var saleDate = DateTime.UtcNow;
@@ -35,14 +33,16 @@ public sealed class SalesService(
 		foreach (var item in request.Items)
 		{
 			if (item.Quantity <= 0)
-				throw new ArgumentException("Quantity must be greater than zero.");
+				throw new BadRequestException("Quantity must be greater than zero.", "sale_item_quantity_invalid");
 
 			if (item.UnitPrice <= 0)
-				throw new ArgumentException("Unit price must be greater than zero.");
+				throw new BadRequestException("Unit price must be greater than zero.", "sale_item_price_invalid");
 
-			var product = await _productQuery.GetByIdAsync(item.ProductId) ?? throw new InvalidOperationException("Product not found.");
+			var product = await _productQuery.GetByIdAsync(item.ProductId)
+				?? throw new NotFoundException($"Product '{item.ProductId}' was not found.", "product_not_found");
+
 			if (product.StockQuantity < item.Quantity)
-				throw new InvalidOperationException($"Insufficient stock for product: {product.Name}");
+				throw new ConflictException($"Insufficient stock for product '{product.Name}'.", "product_stock_insufficient");
 
 			saleItems.Add(new SaleItem
 			{

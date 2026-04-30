@@ -1,4 +1,6 @@
-﻿using RetailErp.Pos.Application.DTOs.Sync;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using RetailErp.Pos.Application.DTOs.Sync;
 using RetailErp.Pos.Application.Interfaces.IServices;
 using RetailErp.Pos.Infrastructure.Repositories.Interfaces.ISync;
 
@@ -6,10 +8,12 @@ namespace RetailErp.Pos.Application.Services;
 
 public sealed class SyncService(
 		ISyncCommand syncCommand,
-		ISyncQuery syncQuery) : ISyncService
+		ISyncQuery syncQuery,
+		ILogger<SyncService>? logger = null) : ISyncService
 {
 	private readonly ISyncCommand _syncCommand = syncCommand;
 	private readonly ISyncQuery _syncQuery = syncQuery;
+	private readonly ILogger<SyncService> _logger = logger ?? NullLogger<SyncService>.Instance;
 
 	public async Task<SyncResponse> SyncSalesAsync()
 	{
@@ -41,8 +45,13 @@ public sealed class SyncService(
 
 				await _syncCommand.MarkAsSyncedAsync(sale.SaleId);
 			}
-			catch
+			catch (Exception exception)
 			{
+				_logger.LogWarning(
+					exception,
+					"Failed to sync sale {SaleId}. The sale will be retried later.",
+					sale.SaleId);
+
 				response.FailedSaleIds.Add(sale.SaleId);
 				response.FailedCount++;
 
