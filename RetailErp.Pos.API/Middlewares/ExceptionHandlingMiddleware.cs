@@ -60,7 +60,7 @@ public sealed class ExceptionHandlingMiddleware
 
 		context.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
 
-		await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails));
+		await context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails, problemDetails.GetType()));
 	}
 
 	private static ProblemDetails CreateProblemDetails(HttpContext context, AppException exception)
