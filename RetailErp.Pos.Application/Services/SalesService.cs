@@ -97,7 +97,8 @@ public sealed class SalesService(
 			OutletId = sale.OutletId,
 			SaleDate = sale.SaleDate,
 			TotalAmount = sale.TotalAmount,
-			SyncStatus = sale.SyncStatus.ToString()
+			SyncStatus = sale.SyncStatus.ToString(),
+			LastSyncAttemptAt = sale.LastSyncAttemptAt
 		};
 	}
 }

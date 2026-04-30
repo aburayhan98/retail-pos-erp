@@ -55,8 +55,7 @@ public sealed class SyncService(
 				response.FailedSaleIds.Add(sale.SaleId);
 				response.FailedCount++;
 
-				await _syncCommand.IncreaseRetryCountAsync(sale.SaleId);
-				await _syncCommand.MarkAsFailedAsync(sale.SaleId);
+				await _syncCommand.MarkAsFailedAndIncreaseRetryAsync(sale.SaleId);
 			}
 		}
 
