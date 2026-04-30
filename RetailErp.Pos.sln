@@ -21,6 +21,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "database", "database", "{91D35ADC-289F-4999-B0CC-C65948D08EC7}"
+	ProjectSection(SolutionItems) = preProject
+		043026-1135_Create_Sales.sql = 043026-1135_Create_Sales.sql
+		043026_1133_Create_Product.sql = 043026_1133_Create_Product.sql
+		043026_1136_Crate_SaleItems.sql = 043026_1136_Crate_SaleItems.sql
+		043026_1137_Create_CentralSales.sql = 043026_1137_Create_CentralSales.sql
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{27BC5AF5-4207-4F89-AA4F-DD1215C44FAB}"
 EndProject
