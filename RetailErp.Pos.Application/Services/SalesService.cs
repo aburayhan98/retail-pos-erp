@@ -69,10 +69,10 @@ public sealed class SalesService(
 
 		await _saleCommand.CreateAsync(sale);
 
-		foreach (var item in saleItems)
-		{
-			await _productCommand.ReduceStockAsync(item.ProductId, item.Quantity);
-		}
+		//foreach (var item in saleItems)
+		//{
+		//	await _productCommand.ReduceStockAsync(item.ProductId, item.Quantity);
+		//}
 	}
 
 	public async Task<IReadOnlyList<SaleResponse>> GetAllAsync()

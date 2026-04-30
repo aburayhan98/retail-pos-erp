@@ -9,12 +9,10 @@ namespace RetailErp.Pos.API.Controllers
 	public class SyncController(ISyncService syncService) : ControllerBase
 	{
 		private readonly ISyncService _syncService = syncService;
-
-		[HttpPost("sales")]
+		[HttpPost("/sync-sales")]
 		public async Task<ActionResult<SyncResponse>> SyncSales()
 		{
 			var response = await _syncService.SyncSalesAsync();
-
 			return Ok(response);
 		}
 	}
