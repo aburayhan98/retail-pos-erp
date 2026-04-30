@@ -1,5 +1,8 @@
 ﻿namespace RetailErp.Pos.Domain.Enums;
 
-internal class SyncStatus
+public enum SyncStatus
 {
+	Pending = 1,
+	Synced = 2,
+	Failed = 3
 }

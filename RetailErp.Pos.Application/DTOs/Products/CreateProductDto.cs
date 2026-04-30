@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace RetailErp.Pos.Application.DTOs.Products
 {
-	internal class CreateProductDTO
+	public sealed record CreateProductDto
 	{
+		public string Name { get; set; } = string.Empty;
+		public string Barcode { get; set; } = string.Empty;
+		public int StockQuantity { get; set; }
+		public decimal Price { get; set; }
 	}
 }
