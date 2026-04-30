@@ -1,4 +1,6 @@
-﻿using Dapper;
+using Dapper;
+using Microsoft.Data.SqlClient;
+using RetailErp.Pos.Application.Common.Exceptions;
 using RetailErp.Pos.Application.Interfaces.IRepositories.IProduct;
 using RetailErp.Pos.Domain.Entities;
 using RetailErp.Pos.Infrastructure.Data;
@@ -37,8 +39,15 @@ public sealed class ProductCommand : IProductCommand
             );
             """;
 
-		using var connection = await _dbConnectionFactory.CreateConnectionAsync();
-		await connection.ExecuteAsync(sql, product);
+		try
+		{
+			using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+			await connection.ExecuteAsync(sql, product);
+		}
+		catch (SqlException exception)
+		{
+			throw new InfrastructureException("Failed to create product.", exception, "product_create_failed");
+		}
 	}
 
 	public async Task ReduceStockAsync(Guid productId, int quantity)
@@ -50,17 +59,24 @@ public sealed class ProductCommand : IProductCommand
               AND StockQuantity >= @Quantity;
             """;
 
-		using var connection = await _dbConnectionFactory.CreateConnectionAsync();
-
-		var affectedRows = await connection.ExecuteAsync(sql, new
+		try
 		{
-			ProductId = productId,
-			Quantity = quantity
-		});
+			using var connection = await _dbConnectionFactory.CreateConnectionAsync();
 
-		if (affectedRows == 0)
+			var affectedRows = await connection.ExecuteAsync(sql, new
+			{
+				ProductId = productId,
+				Quantity = quantity
+			});
+
+			if (affectedRows == 0)
+			{
+				throw new ConflictException("Insufficient stock or product was not found.", "product_stock_reduce_failed");
+			}
+		}
+		catch (SqlException exception)
 		{
-			throw new InvalidOperationException("Insufficient stock or product not found.");
+			throw new InfrastructureException("Failed to update product stock.", exception, "product_stock_update_failed");
 		}
 	}
 }
