@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+using FluentAssertions;
+using RetailErp.Pos.Application.Common.Exceptions;
 using RetailErp.Pos.Application.Services;
 using RetailErp.Pos.Infrastructure.Data.Command;
 using RetailErp.Pos.Infrastructure.Data.Query;
@@ -25,15 +26,12 @@ public sealed class ProductsServiceTests
 	[WithRollback]
 	public async Task CreateAsync_ShouldCreateProduct()
 	{
-		// Arrange
 		var request = CommonObjectInit.CreateProductRequest();
 
-		// Act
 		await _service.CreateAsync(request);
 
 		var product = await _productQuery.GetByBarcodeAsync(request.Barcode);
 
-		// Assert
 		product.Should().NotBeNull();
 		product!.Name.Should().Be(request.Name);
 		product.Barcode.Should().Be(request.Barcode);
@@ -45,17 +43,14 @@ public sealed class ProductsServiceTests
 	[WithRollback]
 	public async Task CreateAsync_ShouldThrow_WhenBarcodeAlreadyExists()
 	{
-		// Arrange
 		var request = CommonObjectInit.CreateProductRequest();
 
 		await _service.CreateAsync(request);
 
-		// Act
 		var action = async () => await _service.CreateAsync(request);
 
-		// Assert
 		await action.Should()
-				.ThrowAsync<InvalidOperationException>()
+				.ThrowAsync<ConflictException>()
 				.WithMessage("*barcode*");
 	}
 
@@ -63,15 +58,12 @@ public sealed class ProductsServiceTests
 	[WithRollback]
 	public async Task GetAllAsync_ShouldReturnProducts()
 	{
-		// Arrange
 		var request = CommonObjectInit.CreateProductRequest();
 
 		await _service.CreateAsync(request);
 
-		// Act
 		var products = await _service.GetAllAsync();
 
-		// Assert
 		products.Should().Contain(x => x.Barcode == request.Barcode);
 	}
 
@@ -79,17 +71,14 @@ public sealed class ProductsServiceTests
 	[WithRollback]
 	public async Task GetByIdAsync_ShouldReturnProduct_WhenProductExists()
 	{
-		// Arrange
 		var request = CommonObjectInit.CreateProductRequest();
 
 		await _service.CreateAsync(request);
 
 		var createdProduct = await _productQuery.GetByBarcodeAsync(request.Barcode);
 
-		// Act
 		var product = await _service.GetByIdAsync(createdProduct!.ProductId);
 
-		// Assert
 		product.Should().NotBeNull();
 		product!.ProductId.Should().Be(createdProduct.ProductId);
 		product.Name.Should().Be(request.Name);
@@ -100,13 +89,10 @@ public sealed class ProductsServiceTests
 	[WithRollback]
 	public async Task GetByIdAsync_ShouldReturnNull_WhenProductDoesNotExist()
 	{
-		// Arrange
 		var productId = Guid.NewGuid();
 
-		// Act
 		var product = await _service.GetByIdAsync(productId);
 
-		// Assert
 		product.Should().BeNull();
 	}
 }

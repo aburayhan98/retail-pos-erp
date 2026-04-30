@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+using FluentAssertions;
+using RetailErp.Pos.Application.Common.Exceptions;
 using RetailErp.Pos.Application.Services;
 using RetailErp.Pos.Infrastructure.Data.Command;
 using RetailErp.Pos.Infrastructure.Data.Query;
@@ -34,7 +35,6 @@ public sealed class SalesServiceTests
 	[WithRollback]
 	public async Task CreateAsync_ShouldCreateSale_AndReduceStock()
 	{
-		// Arrange
 		var product = CommonObjectInit.Product();
 		product.StockQuantity = 10;
 
@@ -44,13 +44,11 @@ public sealed class SalesServiceTests
 		var expectedStock = product.StockQuantity - request.Items.Sum(x => x.Quantity);
 		var expectedTotal = request.Items.Sum(x => x.Quantity * x.UnitPrice);
 
-		// Act
 		await _salesService.CreateAsync(request);
 
 		var updatedProduct = await _productQuery.GetByIdAsync(product.ProductId);
 		var sales = await _salesService.GetAllAsync();
 
-		// Assert
 		updatedProduct.Should().NotBeNull();
 		updatedProduct!.StockQuantity.Should().Be(expectedStock);
 
@@ -64,24 +62,20 @@ public sealed class SalesServiceTests
 	[WithRollback]
 	public async Task CreateAsync_ShouldThrow_WhenProductNotFound()
 	{
-		// Arrange
 		var product = CommonObjectInit.Product();
 		var request = CommonObjectInit.CreateSaleRequest(product);
 
-		// Act
 		var action = async () => await _salesService.CreateAsync(request);
 
-		// Assert
 		await action.Should()
-				.ThrowAsync<InvalidOperationException>()
-				.WithMessage("*Product not found*");
+				.ThrowAsync<NotFoundException>()
+				.WithMessage("*was not found*");
 	}
 
 	[FactInDebugOnly]
 	[WithRollback]
 	public async Task CreateAsync_ShouldThrow_WhenStockIsInsufficient()
 	{
-		// Arrange
 		var product = CommonObjectInit.Product();
 		product.StockQuantity = 1;
 
@@ -90,12 +84,10 @@ public sealed class SalesServiceTests
 		var request = CommonObjectInit.CreateSaleRequest(product);
 		request.Items[0].Quantity = 5;
 
-		// Act
 		var action = async () => await _salesService.CreateAsync(request);
 
-		// Assert
 		await action.Should()
-				.ThrowAsync<InvalidOperationException>()
+				.ThrowAsync<ConflictException>()
 				.WithMessage("*Insufficient stock*");
 	}
 
@@ -103,16 +95,13 @@ public sealed class SalesServiceTests
 	[WithRollback]
 	public async Task CreateAsync_ShouldThrow_WhenSaleItemsAreEmpty()
 	{
-		// Arrange
 		var request = CommonObjectInit.CreateSaleRequest(CommonObjectInit.Product());
 		request.Items.Clear();
 
-		// Act
 		var action = async () => await _salesService.CreateAsync(request);
 
-		// Assert
 		await action.Should()
-				.ThrowAsync<ArgumentException>()
+				.ThrowAsync<BadRequestException>()
 				.WithMessage("*at least one item*");
 	}
 
@@ -120,7 +109,6 @@ public sealed class SalesServiceTests
 	[WithRollback]
 	public async Task CreateAsync_ShouldThrow_WhenQuantityIsZero()
 	{
-		// Arrange
 		var product = CommonObjectInit.Product();
 
 		await _productCommand.CreateAsync(product);
@@ -128,12 +116,10 @@ public sealed class SalesServiceTests
 		var request = CommonObjectInit.CreateSaleRequest(product);
 		request.Items[0].Quantity = 0;
 
-		// Act
 		var action = async () => await _salesService.CreateAsync(request);
 
-		// Assert
 		await action.Should()
-				.ThrowAsync<ArgumentException>()
+				.ThrowAsync<BadRequestException>()
 				.WithMessage("*Quantity*");
 	}
 
@@ -141,7 +127,6 @@ public sealed class SalesServiceTests
 	[WithRollback]
 	public async Task CreateAsync_ShouldThrow_WhenUnitPriceIsZero()
 	{
-		// Arrange
 		var product = CommonObjectInit.Product();
 
 		await _productCommand.CreateAsync(product);
@@ -149,12 +134,10 @@ public sealed class SalesServiceTests
 		var request = CommonObjectInit.CreateSaleRequest(product);
 		request.Items[0].UnitPrice = 0;
 
-		// Act
 		var action = async () => await _salesService.CreateAsync(request);
 
-		// Assert
 		await action.Should()
-				.ThrowAsync<ArgumentException>()
+				.ThrowAsync<BadRequestException>()
 				.WithMessage("*Unit price*");
 	}
 
@@ -162,7 +145,6 @@ public sealed class SalesServiceTests
 	[WithRollback]
 	public async Task GetByIdAsync_ShouldReturnSale_WhenSaleExists()
 	{
-		// Arrange
 		var product = CommonObjectInit.Product();
 
 		await _productCommand.CreateAsync(product);
@@ -174,10 +156,8 @@ public sealed class SalesServiceTests
 		var createdSale = (await _saleQuery.GetAllAsync())
 				.FirstOrDefault(x => x.OutletId == request.OutletId);
 
-		// Act
 		var result = await _salesService.GetByIdAsync(createdSale!.SaleId);
 
-		// Assert
 		result.Should().NotBeNull();
 		result!.SaleId.Should().Be(createdSale.SaleId);
 		result.OutletId.Should().Be(request.OutletId);
@@ -189,13 +169,10 @@ public sealed class SalesServiceTests
 	[WithRollback]
 	public async Task GetByIdAsync_ShouldReturnNull_WhenSaleDoesNotExist()
 	{
-		// Arrange
 		var saleId = Guid.NewGuid();
 
-		// Act
 		var result = await _salesService.GetByIdAsync(saleId);
 
-		// Assert
 		result.Should().BeNull();
 	}
 
@@ -203,7 +180,6 @@ public sealed class SalesServiceTests
 	[WithRollback]
 	public async Task GetAllAsync_ShouldReturnSales()
 	{
-		// Arrange
 		var product = CommonObjectInit.Product();
 
 		await _productCommand.CreateAsync(product);
@@ -212,10 +188,8 @@ public sealed class SalesServiceTests
 
 		await _salesService.CreateAsync(request);
 
-		// Act
 		var result = await _salesService.GetAllAsync();
 
-		// Assert
 		result.Should().NotBeNull();
 		result.Should().Contain(x =>
 				x.OutletId == request.OutletId &&

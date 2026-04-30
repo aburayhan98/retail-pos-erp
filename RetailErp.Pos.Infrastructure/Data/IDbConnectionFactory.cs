@@ -1,6 +1,7 @@
-﻿using System.Data;
+using System.Data;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using RetailErp.Pos.Application.Common.Exceptions;
 
 namespace RetailErp.Pos.Infrastructure.Data;
 
@@ -21,8 +22,18 @@ public sealed class DbConnectionFactory : IDbConnectionFactory
 
 	public async Task<IDbConnection> CreateConnectionAsync()
 	{
-		var connection = new SqlConnection(_connectionString);
-		await connection.OpenAsync();
-		return connection;
+		try
+		{
+			var connection = new SqlConnection(_connectionString);
+			await connection.OpenAsync();
+			return connection;
+		}
+		catch (SqlException exception)
+		{
+			throw new InfrastructureException(
+				"Unable to connect to the database.",
+				exception,
+				"database_connection_failed");
+		}
 	}
 }
