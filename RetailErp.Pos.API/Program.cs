@@ -12,7 +12,6 @@ using RetailErp.Pos.Application.Validators;
 using RetailErp.Pos.Infrastructure.Data;
 using RetailErp.Pos.Infrastructure.Data.Command;
 using RetailErp.Pos.Infrastructure.Data.Query;
-using RetailErp.Pos.Infrastructure.Repositories.Commands;
 using RetailErp.Pos.Infrastructure.Repositories.Interfaces.ISync;
 
 var builder = WebApplication.CreateBuilder(args);
