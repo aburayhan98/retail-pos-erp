@@ -113,14 +113,38 @@
       return;
     }
 
-    items.Add(new SaleItemUI
+    if (quantity <= 0)
     {
-      ProductId = product.ProductId,
-      ProductName = product.Name,
-      Quantity = quantity,
-      UnitPrice = unitPrice,
-      Barcode = barcode
-    });
+      errorMessage = "Quantity must be greater than zero";
+      return;
+    }
+
+    if (unitPrice <= 0)
+    {
+      errorMessage = "Price must be greater than zero";
+      return;
+    }
+
+    var existingItem = items.FirstOrDefault(x =>
+        x.ProductId == product.ProductId &&
+        x.UnitPrice == unitPrice &&
+        x.Barcode == barcode);
+
+    if (existingItem is not null)
+    {
+      existingItem.Quantity += quantity;
+    }
+    else
+    {
+      items.Add(new SaleItemUI
+      {
+        ProductId = product.ProductId,
+        ProductName = product.Name,
+        Quantity = quantity,
+        UnitPrice = unitPrice,
+        Barcode = barcode
+      });
+    }
 
     errorMessage = string.Empty;
   }
