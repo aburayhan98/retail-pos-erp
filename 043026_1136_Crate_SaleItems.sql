@@ -1,10 +1,17 @@
-﻿CREATE TABLE SaleItems (
-SaleItemId UNIQUEIDENTIFIER NOT NULL PRIMARY KEY,
-SaleId UNIQUEIDENTIFIER NOT NULL,
-ProductId UNIQUEIDENTIFIER NOT NULL,
-Barcode NVARCHAR(50) NOT NULL,
-Quantity INT NOT NULL,
-UnitPrice DECIMAL(18,2) NOT NULL,
-LineTotal DECIMAL(18,2) NOT NULL,
-CONSTRAINT FK_SaleItems_Sales FOREIGN KEY (SaleId) REFERENCES Sales(SaleId)
-);
+﻿
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SaleItems]') AND type in (N'U'))
+BEGIN
+CREATE TABLE [dbo].[SaleItems](
+	[SaleItemId] [uniqueidentifier] NOT NULL,
+	[SaleId] [uniqueidentifier] NOT NULL,
+	[ProductId] [uniqueidentifier] NOT NULL,
+	[Barcode] [nvarchar](50) NOT NULL,
+	[Quantity] [int] NOT NULL,
+	[UnitPrice] [decimal](18, 2) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[SaleItemId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
