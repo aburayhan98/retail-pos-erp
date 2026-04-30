@@ -17,7 +17,7 @@ public sealed class SyncService(
 
 	public async Task<SyncResponse> SyncSalesAsync()
 	{
-		var sales = await _syncQuery.GetSyncedSalesAsync();
+		var sales = await _syncQuery.GetUnSyncedSalesAsync();
 
 		var response = new SyncResponse
 		{
