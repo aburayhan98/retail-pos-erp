@@ -61,4 +61,10 @@ public sealed class PosApiService(HttpClient httpClient)
 
 		return await response.Content.ReadFromJsonAsync<SyncResponse>();
 	}
+
+	public async Task<List<SaleResponse>> GetSalesAsync()
+	{
+		var result = await _httpClient.GetFromJsonAsync<List<SaleResponse>>("api/sales");
+		return result ?? [];
+	}
 }
