@@ -1,0 +1,111 @@
+﻿@page "/sales-list"
+@rendermode InteractiveServer
+@using RetailErp.Pos.Application.DTOs.Sales
+@using RetailErp.Pos.UI.Services
+@inject PosApiService PosApiService
+
+<h3 class="mb-3">Sales List</h3>
+
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+  <div class="alert alert-danger">@errorMessage</div>
+}
+
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>Local Sales</span>
+    <button type="button" class="btn btn-sm btn-outline-primary" @onclick="LoadSalesAsync">
+      Refresh
+    </button>
+  </div>
+
+  <div class="card-body">
+    @if (isLoading)
+    {
+      <p>Loading sales...</p>
+    }
+    else if (sales.Count == 0)
+    {
+      <p class="text-muted">No sales found.</p>
+    }
+    else
+    {
+      <table class="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Sale ID</th>
+            <th>Outlet ID</th>
+            <th>Sale Date</th>
+            <th>Total Amount</th>
+            <th>Sync Status</th>
+            <th>Retry Count</th>
+            <th>Last Sync Attempt</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (var sale in sales)
+          {
+            <tr>
+              <td>@sale.SaleId</td>
+              <td>@sale.OutletId</td>
+              <td>@sale.SaleDate.ToLocalTime()</td>
+              <td>@sale.TotalAmount</td>
+              <td>
+                <span class="@GetStatusClass(sale.SyncStatus)">
+                  @sale.SyncStatus
+                </span>
+              </td>
+              <td>@sale.RetryCount</td>
+              <td>
+                @(sale.LastSyncAttemptAt.HasValue
+                            ? sale.LastSyncAttemptAt.Value.ToLocalTime().ToString("yyyy-MM-dd hh:mm tt")
+                            : "-")
+          </td>
+        </tr>
+                }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>
+
+@code {
+  private List<SaleResponse> sales = new();
+  private bool isLoading = true;
+  private string errorMessage = string.Empty;
+
+  protected override async Task OnInitializedAsync()
+  {
+    await LoadSalesAsync();
+  }
+
+  private async Task LoadSalesAsync()
+  {
+    try
+    {
+      isLoading = true;
+      errorMessage = string.Empty;
+
+      sales = await PosApiService.GetSalesAsync();
+    }
+    catch (Exception ex)
+    {
+      errorMessage = ex.Message;
+    }
+    finally
+    {
+      isLoading = false;
+    }
+  }
+
+  private static string GetStatusClass(string status)
+  {
+    return status switch
+    {
+      "Pending" => "badge bg-warning text-dark",
+      "Synced" => "badge bg-success",
+      "Failed" => "badge bg-danger",
+      _ => "badge bg-secondary"
+    };
+  }
+}
