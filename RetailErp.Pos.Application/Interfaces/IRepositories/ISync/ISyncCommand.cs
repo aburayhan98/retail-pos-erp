@@ -8,4 +8,5 @@ public interface ISyncCommand
 	Task MarkAsSyncedAsync(Guid saleId);
 	Task MarkAsFailedAsync(Guid saleId);
 	Task IncreaseRetryCountAsync(Guid saleId);
+	Task MarkAsFailedAndIncreaseRetryAsync(Guid saleId);
 }
