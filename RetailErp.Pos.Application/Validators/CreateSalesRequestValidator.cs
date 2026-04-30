@@ -35,8 +35,8 @@ public sealed class CreateSaleItemRequestValidator
 		RuleFor(x => x.Barcode)
 				.NotEmpty()
 				.WithMessage("Barcode is required.")
-				.MaximumLength(100)
-				.WithMessage("Barcode must not exceed 100 characters.");
+				.MaximumLength(50)
+				.WithMessage("Barcode must not exceed 50 characters.");
 
 		RuleFor(x => x.Quantity)
 				.GreaterThan(0)
