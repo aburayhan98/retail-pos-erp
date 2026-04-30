@@ -39,12 +39,31 @@ public sealed class SyncQueryTests
 		await _syncCommand.MarkAsSyncedAsync(syncedSale.SaleId);
 
 		// Act
-		var result = await _query.GetSyncedSalesAsync();
+		var result = await _query.GetUnSyncedSalesAsync();
 
 		// Assert
 		result.Should().Contain(x => x.SaleId == pendingSale.SaleId && x.SyncStatus == SyncStatus.Pending);
 		result.Should().Contain(x => x.SaleId == failedSale.SaleId && x.SyncStatus == SyncStatus.Failed);
 		result.Should().NotContain(x => x.SaleId == syncedSale.SaleId);
+	}
+
+	[FactInDebugOnly]
+	[WithRollback]
+	public async Task GetSyncedSalesAsync_ShouldReturnOutletId_ForPendingSales()
+	{
+		// Arrange
+		var outletId = Guid.NewGuid();
+		var sale = CommonObjectInit.Sale(outletId);
+
+		await _saleCommand.CreateAsync(sale);
+
+		// Act
+		var result = await _query.GetUnSyncedSalesAsync();
+		var pendingSale = result.FirstOrDefault(x => x.SaleId == sale.SaleId);
+
+		// Assert
+		pendingSale.Should().NotBeNull();
+		pendingSale!.OutletId.Should().Be(outletId);
 	}
 
 	[FactInDebugOnly]
