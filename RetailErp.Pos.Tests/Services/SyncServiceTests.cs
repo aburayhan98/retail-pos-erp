@@ -3,7 +3,6 @@ using RetailErp.Pos.Application.Services;
 using RetailErp.Pos.Domain.Enums;
 using RetailErp.Pos.Infrastructure.Data.Command;
 using RetailErp.Pos.Infrastructure.Data.Query;
-using RetailErp.Pos.Infrastructure.Repositories.Commands;
 using RetailErp.Pos.Tests.Attributes;
 
 namespace RetailErp.Pos.Tests.Services;
