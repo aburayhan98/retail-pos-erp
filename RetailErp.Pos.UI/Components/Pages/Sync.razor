@@ -1,0 +1,132 @@
+﻿@page "/sync"
+@rendermode InteractiveServer
+@using RetailErp.Pos.Application.DTOs.Sync
+@using RetailErp.Pos.UI.Services
+@inject PosApiService PosApiService
+
+<h3 class="mb-3">Sync Sales</h3>
+
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+  <div class="alert alert-danger">@errorMessage</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(successMessage))
+{
+  <div class="alert alert-success">@successMessage</div>
+}
+
+<div class="card">
+  <div class="card-body">
+    <p class="text-muted">
+      Click the button below to sync pending/failed local POS sales with the central ERP simulation.
+    </p>
+
+    <button type="button" class="btn btn-primary" @onclick="SyncSalesAsync" disabled="@isSyncing">
+      @(isSyncing ? "Syncing..." : "Sync Sales")
+    </button>
+  </div>
+</div>
+
+@if (syncResponse is not null)
+{
+  <div class="card mt-4">
+    <div class="card-header">
+      Sync Result
+    </div>
+
+    <div class="card-body">
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+            <th>Total Processed</th>
+            <td>@syncResponse.TotalProcessed</td>
+          </tr>
+          <tr>
+            <th>Success</th>
+            <td>@syncResponse.SuccessCount</td>
+          </tr>
+          <tr>
+            <th>Failed</th>
+            <td>@syncResponse.FailedCount</td>
+          </tr>
+          <tr>
+            <th>Duplicate</th>
+            <td>@syncResponse.DuplicateCount</td>
+          </tr>
+          <tr>
+            <th>Synced At</th>
+            <td>@syncResponse.SyncedAt.ToLocalTime()</td>
+          </tr>
+          <tr>
+            <th>Message</th>
+            <td>@syncResponse.Message</td>
+          </tr>
+        </tbody>
+      </table>
+
+      @if (syncResponse.SuccessfulSaleIds.Count > 0)
+      {
+        <h6>Successful Sale IDs</h6>
+        <ul>
+          @foreach (var id in syncResponse.SuccessfulSaleIds)
+          {
+            <li>@id</li>
+          }
+        </ul>
+      }
+
+      @if (syncResponse.DuplicateSaleIds.Count > 0)
+      {
+        <h6>Duplicate Sale IDs</h6>
+        <ul>
+          @foreach (var id in syncResponse.DuplicateSaleIds)
+          {
+            <li>@id</li>
+          }
+        </ul>
+      }
+
+      @if (syncResponse.FailedSaleIds.Count > 0)
+      {
+        <h6>Failed Sale IDs</h6>
+        <ul>
+          @foreach (var id in syncResponse.FailedSaleIds)
+          {
+            <li>@id</li>
+          }
+        </ul>
+      }
+    </div>
+  </div>
+}
+
+@code {
+  private SyncResponse? syncResponse;
+  private bool isSyncing = false;
+  private string errorMessage = string.Empty;
+  private string successMessage = string.Empty;
+
+  private async Task SyncSalesAsync()
+  {
+    try
+    {
+      isSyncing = true;
+      errorMessage = string.Empty;
+      successMessage = string.Empty;
+      syncResponse = null;
+
+      syncResponse = await PosApiService.SyncSalesAsync();
+
+      successMessage = "Sync completed.";
+    }
+    catch (Exception ex)
+    {
+      errorMessage = ex.Message;
+    }
+    finally
+    {
+      isSyncing = false;
+    }
+  }
+}
