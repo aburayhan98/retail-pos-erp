@@ -4,6 +4,6 @@ namespace RetailErp.Pos.Infrastructure.Repositories.Interfaces.ISync;
 
 public interface ISyncQuery
 {
-	Task<IReadOnlyList<Sale>> GetSyncedSalesAsync();
+	Task<IReadOnlyList<Sale>> GetUnSyncedSalesAsync();
 	Task<bool> ExistsInCentralAsync(Guid saleId);
 }
