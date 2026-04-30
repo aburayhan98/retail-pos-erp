@@ -7,4 +7,6 @@ public class SaleResponse
 	public DateTime SaleDate { get; set; }
 	public decimal TotalAmount { get; set; }
 	public string SyncStatus { get; set; } = string.Empty;
+	public int RetryCount { get; set; }
+	public DateTime? LastSyncAttemptAt { get; set; }
 }
