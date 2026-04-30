@@ -122,42 +122,6 @@ public sealed class SaleCommand(IDbConnectionFactory dbConnectionFactory) : ISal
 		}
 	}
 
-    // keep your other methods below
-	//public async Task CreateAsync(Sale sale)
-	//{
-	//	const string sql = """
- //           INSERT INTO Sales
- //           (
- //               SaleId,
- //               OutletId,
- //               SaleDate,
- //               TotalAmount,
- //               SyncStatus,
- //               RetryCount
- //           )
- //           VALUES
- //           (
- //               @SaleId,
- //               @OutletId,
- //               @SaleDate,
- //               @TotalAmount,
- //               @SyncStatus,
- //               @RetryCount
- //           );
- //           """;
-
-	//	using var connection = await _dbConnectionFactory.CreateConnectionAsync();
-	//	await connection.ExecuteAsync(sql, new
-	//	{
-	//		sale.SaleId,
-	//		sale.OutletId,
-	//		sale.SaleDate,
-	//		sale.TotalAmount,
-	//		SyncStatus = sale.SyncStatus.ToString(),
-	//		sale.RetryCount
-	//	});
-	//}
-
 	public async Task MarkSyncAsync(Guid saleId, bool isSuccess)
 	{
 		const string sql = """
