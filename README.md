@@ -432,6 +432,7 @@ Sync status belongs to local `Sales` because the local POS needs to know whether
 - No authentication or authorization
 - No advanced conflict resolution
 - No distributed transaction between separate physical databases
+- NO implementation of Retry with exponential backoff like Polly or scheduled retry
 - UI is prototype-level
 - No automated deployment pipeline
 
